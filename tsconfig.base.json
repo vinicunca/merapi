@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "strictNullChecks": true,
+    "jsx": "react",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@vinicunca/merapi-core": ["packages/merapi-core/src"],
+      "@vinicunca/merapi-persist-client-core": ["packages/merapi-persist-client-core/src"],
+      "@vinicunca/merapi-async-storage-persister": [
+        "packages/merapi-async-storage-persister/src"
+      ],
+      "@vinicunca/merapi-broadcast-client-experimental": ["packages/merapi-broadcast-client-experimental/src"],
+      "@vinicunca/merapi-sync-storage-persister": [
+        "packages/merapi-sync-storage-persister/src"
+      ],
+      "@vinicunca/vue-merapi": ["packages/vue-merapi/src"]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+.DS_Store
+node_modules
+dist
+temp
+.dev
+coverage
+/icons
+/es
+/lib
+/css
+/themes
+
+yarn.lock
+package-lock.json
+
+__unconfig_vite.config*
+
+meta-data.json
+
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
