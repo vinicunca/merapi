@@ -1,11 +1,11 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/merapi-core" },
-    { "path": "packages/merapi-persist-client-core" },
-    { "path": "packages/merapi-async-storage-persister" },
-    { "path": "packages/merapi-broadcast-client-experimental" },
-    { "path": "packages/merapi-sync-storage-persister" },
-    { "path": "packages/vue-merapi" }
+    { "path": "packages/merapi-core" }
+    // { "path": "packages/merapi-persist-client-core" },
+    // { "path": "packages/merapi-async-storage-persister" },
+    // { "path": "packages/merapi-broadcast-client-experimental" },
+    // { "path": "packages/merapi-sync-storage-persister" },
+    // { "path": "packages/vue-merapi" }
   ]
 }
