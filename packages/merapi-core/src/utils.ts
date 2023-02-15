@@ -1,4 +1,4 @@
-import { isNumber } from '@vinicunca/js-utilities';
+import { isBrowser, isNumber } from '@vinicunca/js-utilities';
 
 import { type FetchStatus, type MerapiKey } from './entities';
 import { type Merapi } from './merapi';
@@ -41,3 +41,5 @@ export function sleep(timeout: number): Promise<void> {
     setTimeout(resolve, timeout);
   });
 }
+
+export const isServer = !isBrowser || 'Deno' in window;

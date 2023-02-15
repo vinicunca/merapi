@@ -1,6 +1,7 @@
-import { isBoolean, isBrowser, isUndefined } from '@vinicunca/js-utilities';
+import { isBoolean, isUndefined } from '@vinicunca/js-utilities';
 
 import { Subscribable } from './subscribable';
+import { isServer } from './utils';
 
 type SetupFn = (
   setOnline: (online?: boolean) => void,
@@ -16,7 +17,7 @@ export class OnlineManager extends Subscribable {
     super();
 
     this.setup = (onOnline) => {
-      if (isBrowser) {
+      if (!isServer && window.addEventListener) {
         const listener = () => onOnline();
         // Listen to online
         window.addEventListener('online', listener, false);

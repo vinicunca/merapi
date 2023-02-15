@@ -1,6 +1,4 @@
-import { isBrowser } from '@vinicunca/js-utilities';
-
-import { isValidTimeout } from './utils';
+import { isServer, isValidTimeout } from './utils';
 
 export abstract class Removable {
   cacheTime!: number;
@@ -24,7 +22,7 @@ export abstract class Removable {
     // Default to 5 minutes (Infinity for server-side) if no cache time is set
     this.cacheTime = Math.max(
       this.cacheTime || 0,
-      newCacheTime ?? (!isBrowser ? Infinity : 5 * 60 * 1000),
+      newCacheTime ?? (isServer ? Infinity : 5 * 60 * 1000),
     );
   }
 

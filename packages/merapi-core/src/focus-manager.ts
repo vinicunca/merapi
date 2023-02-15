@@ -1,6 +1,7 @@
-import { isBoolean, isBrowser, isUndefined } from '@vinicunca/js-utilities';
+import { isBoolean, isUndefined } from '@vinicunca/js-utilities';
 
 import { Subscribable } from './subscribable';
+import { isServer } from './utils';
 
 type SetupFn = (
   setFocused: (focused?: boolean) => void,
@@ -15,7 +16,7 @@ export class FocusManager extends Subscribable {
   constructor() {
     super();
     this.setup = (onFocus) => {
-      if (isBrowser) {
+      if (!isServer && window.addEventListener) {
         const listener = () => onFocus();
 
         window.addEventListener('visibilitychange', listener, false);

@@ -1,3 +1,8 @@
-export default {
-  displayName: 'merapi-core',
-};
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+  },
+});
