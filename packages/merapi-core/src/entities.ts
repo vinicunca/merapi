@@ -1,3 +1,4 @@
+import { type MerapiFilters } from './utils';
 import { type MerapiBehavior } from './merapi';
 import { type RetryDelayValue, type RetryValue } from './retryer';
 
@@ -74,15 +75,15 @@ export type MerapiKeyHashFunction<TMerapiKey extends MerapiKey> = (
   merapiKey: TMerapiKey,
 ) => string;
 
-export type GetPreviousPageParamFunction<TMerapiFnData = unknown> = (
-  firstPage: TMerapiFnData,
-  allPages: TMerapiFnData[],
-) => unknown;
+export type GetPreviousPageParamFunction<TMerapiFnData = unknown> = (options: {
+  firstPage: TMerapiFnData;
+  allPages: TMerapiFnData[];
+}) => unknown;
 
-export type GetNextPageParamFunction<TMerapiFnData = unknown> = (
-  lastPage: TMerapiFnData,
-  allPages: TMerapiFnData[],
-) => unknown;
+export type GetNextPageParamFunction<TMerapiFnData = unknown> = (options: {
+  lastPage: TMerapiFnData;
+  allPages: TMerapiFnData[];
+}) => unknown;
 
 export interface InfiniteData<TData> {
   pages: TData[];
@@ -102,3 +103,15 @@ export interface CancelOptions {
 
 export type MerapiStatus = 'loading' | 'error' | 'success';
 export type FetchStatus = 'fetching' | 'paused' | 'idle';
+
+export interface RefetchMerapiFilters<TPageData = unknown>
+  extends MerapiFilters,
+  RefetchPageFilters<TPageData> {}
+
+export interface RefetchPageFilters<TPageData = unknown> {
+  refetchPage?: (options: {
+    lastPage: TPageData;
+    index: number;
+    allPages: TPageData[];
+  }) => boolean;
+}
