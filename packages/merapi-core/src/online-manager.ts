@@ -1,0 +1,88 @@
+import { isBoolean, isBrowser, isUndefined } from '@vinicunca/js-utilities';
+
+import { Subscribable } from './subscribable';
+
+type SetupFn = (
+  setOnline: (online?: boolean) => void,
+) => (() => void) | undefined;
+
+export class OnlineManager extends Subscribable {
+  private online?: boolean;
+  private cleanup?: () => void;
+
+  private setup: SetupFn;
+
+  constructor() {
+    super();
+
+    this.setup = (onOnline) => {
+      if (isBrowser) {
+        const listener = () => onOnline();
+        // Listen to online
+        window.addEventListener('online', listener, false);
+        window.addEventListener('offline', listener, false);
+
+        return () => {
+          // Be sure to unsubscribe if a new handler is set
+          window.removeEventListener('online', listener);
+          window.removeEventListener('offline', listener);
+        };
+      }
+
+      return undefined;
+    };
+  }
+
+  protected onSubscribe(): void {
+    if (!this.cleanup) {
+      this.setEventListener(this.setup);
+    }
+  }
+
+  protected onUnsubscribe() {
+    if (!this.hasListeners()) {
+      this.cleanup?.();
+      this.cleanup = undefined;
+    }
+  }
+
+  setEventListener(setup: SetupFn): void {
+    this.setup = setup;
+    this.cleanup?.();
+    this.cleanup = setup((online?: boolean) => {
+      if (isBoolean(online)) {
+        this.setOnline(online);
+      } else {
+        this.onOnline();
+      }
+    });
+  }
+
+  setOnline(online?: boolean): void {
+    this.online = online;
+
+    if (online) {
+      this.onOnline();
+    }
+  }
+
+  onOnline(): void {
+    this.listeners.forEach((listener) => {
+      listener();
+    });
+  }
+
+  isOnline(): boolean {
+    if (isBoolean(this.online)) {
+      return this.online;
+    }
+
+    if (isUndefined(navigator) || isUndefined(navigator.onLine)) {
+      return true;
+    }
+
+    return navigator.onLine;
+  }
+}
+
+export const onlineManager = new OnlineManager();
