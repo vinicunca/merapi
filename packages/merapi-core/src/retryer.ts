@@ -149,7 +149,7 @@ export function createRetryer<TData = unknown, TError = unknown>(
 
     let promiseOrValue: any;
 
-    // Execute query
+    // Execute merapi
     try {
       promiseOrValue = config.fn();
     } catch (error) {
@@ -173,7 +173,7 @@ export function createRetryer<TData = unknown, TError = unknown>(
           || (isFunction(retry) && retry(failureCount, error));
 
         if (isRetryCancelled || !shouldRetry) {
-          // We are done if the query does not need to be retried
+          // We are done if the merapi does not need to be retried
           reject(error);
           return;
         }
