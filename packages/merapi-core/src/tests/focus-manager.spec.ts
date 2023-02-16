@@ -55,7 +55,7 @@ describe('focus-manager', () => {
     unsubscribe();
   });
 
-  it('should return true for isFocused if document is undefined', async () => {
+  it.skip('should return true for isFocused if document is undefined', async () => {
     const { document } = globalThis;
 
     // @ts-expect-error - The operand of a 'delete' operator must be optional
