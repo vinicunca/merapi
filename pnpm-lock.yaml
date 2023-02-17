@@ -6,7 +6,7 @@ importers:
     specifiers:
       '@types/node': '*'
       '@vinicunca/eslint-config': ^1.6.2
-      '@vinicunca/js-utilities': ^2.6.3
+      '@vinicunca/js-utilities': ^2.8.0
       concurrently: ^7.1.0
       eslint: ^8.34.0
       eslint-define-config: ^1.15.0
@@ -16,7 +16,7 @@ importers:
     devDependencies:
       '@types/node': 18.13.0
       '@vinicunca/eslint-config': 1.6.2_zimmwslodd2ofrq5xsokgm35r4
-      '@vinicunca/js-utilities': 2.6.7
+      '@vinicunca/js-utilities': 2.8.0
       concurrently: 7.6.0
       eslint: 8.34.0
       eslint-define-config: 1.15.0
@@ -580,8 +580,8 @@ packages:
       - typescript
     dev: true
 
-  /@vinicunca/js-utilities/2.6.7:
-    resolution: {integrity: sha512-MRRGXfQMEktqyC4gOJ+LWEHFyDL/sR8td93dv14qbVNQP+CMOc9cAwOGF4mlVGKrC8N2wWSkOocbW7HHC0ZS+w==}
+  /@vinicunca/js-utilities/2.8.0:
+    resolution: {integrity: sha512-DE6uESO92PAPQKmJk10U4oRBfFWprZkWis6V3yp12AmJdnAZpYy+rBsSdD+jcNRzODKBozNnzg1UGg+T43q/xQ==}
     dev: true
 
   /@vitest/expect/0.28.5:

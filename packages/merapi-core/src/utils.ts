@@ -1,28 +1,8 @@
-import { hasOwn, isBoolean, isBrowser, isDefined, isFunction, isNumber, isObject } from '@vinicunca/js-utilities';
+import { isBoolean, isBrowser, isDefined, isFunction, isNumber, isObject, isPlainArray, isPlainObject, sleep } from '@vinicunca/js-utilities';
 
-import { type FetchStatus, type MerapiKey, type MerapiOptions } from './entities';
+import { type FetchStatus, type MerapiFunction, type MerapiKey, type MerapiOptions, type MutationFunction, type MutationKey, type MutationOptions } from './entities';
+import { type Mutation } from './mutation';
 import { type Merapi } from './merapi';
-
-export function noop(): undefined {
-  return undefined;
-}
-
-/**
- * Shallow compare objects. Only works with objects that always have the same properties.
- */
-export function shallowEqualObjects<T>(a: T, b: T): boolean {
-  if ((a && !b) || (b && !a)) {
-    return false;
-  }
-
-  for (const key in a) {
-    if (a[key] !== b[key]) {
-      return false;
-    }
-  }
-
-  return true;
-}
 
 export interface MerapiFilters {
   /**
@@ -51,27 +31,98 @@ export interface MerapiFilters {
   fetchStatus?: FetchStatus;
 }
 
+export interface MutationFilters {
+  /**
+   * Match mutation key exactly
+   */
+  exact?: boolean;
+  /**
+   * Include mutations matching this predicate function
+   */
+  predicate?: (mutation: Mutation<any, any, any>) => boolean;
+  /**
+   * Include mutations matching this mutation key
+   */
+  mutationKey?: MutationKey;
+  /**
+   * Include or exclude fetching mutations
+   */
+  fetching?: boolean;
+}
+
+export type DataUpdateFunction<TInput, TOutput> = (input: TInput) => TOutput;
+
+export type Updater<TInput, TOutput> =
+  | TOutput
+  | DataUpdateFunction<TInput, TOutput>;
+
 export type MerapiTypeFilter = 'all' | 'active' | 'inactive';
+
+export const isServer = !isBrowser || 'Deno' in window;
+
+export function noop(): undefined {
+  return undefined;
+}
 
 export function isValidTimeout(value: unknown): value is number {
   return isNumber(value) && value >= 0 && value !== Infinity;
 }
 
-export function sleep(timeout: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
+export function timeUntilStale({ updatedAt, staleTime }: { updatedAt: number; staleTime?: number }): number {
+  return Math.max(updatedAt + (staleTime || 0) - Date.now(), 0);
 }
 
-/**
- * Schedules a microtask.
- * This can be useful to schedule state updates after rendering.
- */
-export function scheduleMicrotask(callback: () => void) {
-  sleep(0).then(callback);
+export function functionalUpdate<TInput, TOutput>(
+  { updater, input }:
+  {
+    updater: Updater<TInput, TOutput>;
+    input: TInput;
+  },
+): TOutput {
+  return isFunction(updater)
+    ? (updater as DataUpdateFunction<TInput, TOutput>)(input)
+    : updater;
 }
 
-export const isServer = !isBrowser || 'Deno' in window;
+export function parseMerapiArgs<
+  TOptions extends MerapiOptions<any, any, any, TMerapiKey>,
+  TMerapiKey extends MerapiKey = MerapiKey,
+>(
+  arg1: TMerapiKey | TOptions,
+  arg2?: MerapiFunction<any, TMerapiKey> | TOptions,
+  arg3?: TOptions,
+): TOptions {
+  if (!isMerapiKey(arg1)) {
+    return arg1 as TOptions;
+  }
+
+  if (isFunction(arg2)) {
+    return { ...arg3, merapiKey: arg1, merapiFn: arg2 } as TOptions;
+  }
+
+  return { ...arg2, merapiKey: arg1 } as TOptions;
+}
+
+export function parseMutationArgs<
+  TOptions extends MutationOptions<any, any, any, any>,
+>(
+  arg1: MutationKey | MutationFunction<any, any> | TOptions,
+  arg2?: MutationFunction<any, any> | TOptions,
+  arg3?: TOptions,
+): TOptions {
+  if (isMerapiKey(arg1)) {
+    if (typeof arg2 === 'function') {
+      return { ...arg3, mutationKey: arg1, mutationFn: arg2 } as TOptions;
+    }
+    return { ...arg2, mutationKey: arg1 } as TOptions;
+  }
+
+  if (typeof arg1 === 'function') {
+    return { ...arg2, mutationFn: arg1 } as TOptions;
+  }
+
+  return { ...arg1 } as TOptions;
+}
 
 export function parseFilterArgs<
   TFilters extends MerapiFilters,
@@ -86,91 +137,19 @@ export function parseFilterArgs<
   ) as [TFilters, TOptions];
 }
 
-export function hashMerapiKeyByOptions<TMerapiKey extends MerapiKey = MerapiKey>(
-  queryKey: TMerapiKey,
-  options?: MerapiOptions<any, any, any, TMerapiKey>,
-): string {
-  const hashFn = options?.merapiKeyHashFn || hashMerapiKey;
-  return hashFn(queryKey);
-}
-
-/**
- * Default query keys hash function.
- * Hashes the value into a stable hash.
- */
-export function hashMerapiKey(queryKey: MerapiKey): string {
-  return JSON.stringify(queryKey, (_, val) =>
-    isPlainObject(val)
-      ? Object.keys(val)
-        .sort()
-        .reduce((result, key) => {
-          result[key] = val[key];
-          return result;
-        }, {} as any)
-      : val,
-  );
-}
-
-export function isMerapiKey(value: unknown): value is MerapiKey {
-  return Array.isArray(value);
-}
-
-// Copied from: https://github.com/jonschlinkert/is-plain-object
-export function isPlainObject(o: any): o is Object {
-  if (!isObject(o)) {
-    return false;
-  }
-
-  // If has modified constructor
-  const ctor = o.constructor;
-  if (typeof ctor === 'undefined') {
-    return true;
-  }
-
-  // If has modified prototype
-  const prot = ctor.prototype;
-  if (!isObject(prot)) {
-    return false;
-  }
-
-  // If constructor does not have an Object-specific method
-  // eslint-disable-next-line sonarjs/prefer-single-boolean-return
-  if (!hasOwn(prot, 'isPrototypeOf')) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-}
-
-/**
- * Checks if key `b` partially matches with key `a`.
- */
-export function partialMatchKey(a: MerapiKey, b: MerapiKey): boolean {
-  return partialDeepEqual(a, b);
-}
-
-/**
- * Checks if `b` partially matches with `a`.
- */
-export function partialDeepEqual(a: any, b: any): boolean {
-  if (a === b) {
-    return true;
-  }
-
-  if (typeof a !== typeof b) {
-    return false;
-  }
-
-  if (a && b && isObject(a) && isObject(b)) {
-    return !Object.keys(b).some((key) => !partialDeepEqual(a[key], b[key]));
-  }
-
-  return false;
-}
-
-export function timeUntilStale({ updatedAt, staleTime }: { updatedAt: number; staleTime?: number }): number {
-  return Math.max(updatedAt + (staleTime || 0) - Date.now(), 0);
+export function parseMutationFilterArgs<
+  TFilters extends MutationFilters,
+  TOptions = unknown,
+>(
+  arg1?: MerapiKey | TFilters,
+  arg2?: TFilters | TOptions,
+  arg3?: TOptions,
+): [TFilters, TOptions | undefined] {
+  return (
+    isMerapiKey(arg1)
+      ? [{ ...arg2, mutationKey: arg1 }, arg3]
+      : [arg1 || {}, arg2]
+  ) as [TFilters, TOptions];
 }
 
 export function matchMerapi(
@@ -219,7 +198,6 @@ export function matchMerapi(
     return false;
   }
 
-  // eslint-disable-next-line sonarjs/prefer-single-boolean-return
   if (predicate && !predicate(merapi)) {
     return false;
   }
@@ -227,8 +205,92 @@ export function matchMerapi(
   return true;
 }
 
-export function isPlainArray(value: unknown) {
-  return Array.isArray(value) && value.length === Object.keys(value).length;
+export function matchMutation(
+  { filters, mutation }:
+  {
+    filters: MutationFilters;
+    mutation: Mutation<any, any>;
+  },
+): boolean {
+  const { exact, fetching, predicate, mutationKey } = filters;
+  if (isMerapiKey(mutationKey)) {
+    if (!mutation.options.mutationKey) {
+      return false;
+    }
+    if (exact) {
+      if (
+        hashMerapiKey(mutation.options.mutationKey) !== hashMerapiKey(mutationKey)
+      ) {
+        return false;
+      }
+    } else if (!partialMatchKey(mutation.options.mutationKey, mutationKey)) {
+      return false;
+    }
+  }
+
+  if (
+    isBoolean(fetching)
+    && (mutation.state.status === 'loading') !== fetching
+  ) {
+    return false;
+  }
+
+  if (predicate && !predicate(mutation)) {
+    return false;
+  }
+
+  return true;
+}
+
+export function hashMerapiKeyByOptions<TMerapiKey extends MerapiKey = MerapiKey>(
+  merapiKey: TMerapiKey,
+  options?: MerapiOptions<any, any, any, TMerapiKey>,
+): string {
+  const hashFn = options?.merapiKeyHashFn || hashMerapiKey;
+  return hashFn(merapiKey);
+}
+
+/**
+ * Default merapi keys hash function.
+ * Hashes the value into a stable hash.
+ */
+export function hashMerapiKey(merapiKey: MerapiKey): string {
+  return JSON.stringify(merapiKey, (_, val) =>
+    isPlainObject(val)
+      ? Object.keys(val)
+        .sort()
+        .reduce((result, key) => {
+          result[key] = val[key];
+          return result;
+        }, {} as any)
+      : val,
+  );
+}
+
+/**
+ * Checks if key `b` partially matches with key `a`.
+ */
+export function partialMatchKey(a: MerapiKey, b: MerapiKey): boolean {
+  return partialDeepEqual(a, b);
+}
+
+/**
+ * Checks if `b` partially matches with `a`.
+ */
+export function partialDeepEqual(a: any, b: any): boolean {
+  if (a === b) {
+    return true;
+  }
+
+  if (typeof a !== typeof b) {
+    return false;
+  }
+
+  if (a && b && isObject(a) && isObject(b)) {
+    return !Object.keys(b).some((key) => !partialDeepEqual(a[key], b[key]));
+  }
+
+  return false;
 }
 
 /**
@@ -264,6 +326,47 @@ export function replaceEqualDeep(a: any, b: any): any {
   }
 
   return b;
+}
+
+/**
+ * Shallow compare objects. Only works with objects that always have the same properties.
+ */
+export function shallowEqualObjects<T>(a: T, b: T): boolean {
+  if ((a && !b) || (b && !a)) {
+    return false;
+  }
+
+  for (const key in a) {
+    if (a[key] !== b[key]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function isMerapiKey(value: unknown): value is MerapiKey {
+  return Array.isArray(value);
+}
+
+export function isError(value: any): value is Error {
+  return value instanceof Error;
+}
+
+/**
+ * Schedules a microtask.
+ * This can be useful to schedule state updates after rendering.
+ */
+export function scheduleMicrotask(callback: () => void) {
+  sleep(0).then(callback);
+}
+
+export function getAbortController(): AbortController | undefined {
+  if (isFunction(AbortController)) {
+    return new AbortController();
+  }
+
+  return undefined;
 }
 
 export function replaceData<

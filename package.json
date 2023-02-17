@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/node": "*",
     "@vinicunca/eslint-config": "^1.6.2",
-    "@vinicunca/js-utilities": "^2.6.3",
+    "@vinicunca/js-utilities": "^2.8.0",
     "concurrently": "^7.1.0",
     "eslint": "^8.34.0",
     "eslint-define-config": "^1.15.0",
