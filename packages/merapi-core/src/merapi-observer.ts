@@ -148,7 +148,7 @@ export class MerapiObserver<
     // ! TODO: handle this
     if (
       process.env.NODE_ENV !== 'production'
-      && typeof options?.isDataEqual !== 'undefined'
+      && isDefined(options?.isDataEqual)
     ) {
       this.client
         .getLogger()

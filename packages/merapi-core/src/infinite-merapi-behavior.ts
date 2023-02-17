@@ -1,5 +1,3 @@
-/* eslint-disable prefer-promise-reject-errors */
-
 import { isDefined, isUndefined } from '@vinicunca/js-utilities';
 
 import { type InfiniteData, type MerapiFunctionContext, type MerapiOptions, type RefetchMerapiFilters } from './entities';

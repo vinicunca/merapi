@@ -1,8 +1,10 @@
+import { type MutationCache } from './mutation-cache';
 import { type MerapiCache } from './merapi-cache';
 import { type MutationState } from './mutation';
 import { type MerapiFilters, type MerapiTypeFilter } from './utils';
 import { type Merapi, type MerapiBehavior } from './merapi';
 import { type RetryDelayValue, type RetryValue } from './retryer';
+import { type Logger } from './logger';
 
 export type MerapiKey = readonly unknown[];
 
@@ -57,10 +59,10 @@ export interface MerapiOptions<
   TMerapiKey extends MerapiKey = MerapiKey,
 > {
   /**
-   * If `false`, failed queries will not retry by default.
-   * If `true`, failed queries will retry infinitely., failureCount: num
-   * If set to an integer number, e.g. 3, failed queries will retry until the failed merapi count meets that number.
-   * If set to a function `(failureCount, error) => boolean` failed queries will retry until the function returns false.
+   * If `false`, failed merapis will not retry by default.
+   * If `true`, failed merapis will retry infinitely., failureCount: num
+   * If set to an integer number, e.g. 3, failed merapis will retry until the failed merapi count meets that number.
+   * If set to a function `(failureCount, error) => boolean` failed merapis will retry until the function returns false.
    */
   retry?: RetryValue<TError>;
   retryDelay?: RetryDelayValue<TError>;
@@ -83,12 +85,12 @@ export interface MerapiOptions<
   | boolean
   | ((oldData: TData | undefined, newData: TData) => TData);
   /**
-   * This function can be set to automatically get the previous cursor for infinite queries.
+   * This function can be set to automatically get the previous cursor for infinite merapis.
    * The result will also be used to determine the value of `hasPreviousPage`.
    */
   getPreviousPageParam?: GetPreviousPageParamFunction<TMerapiFnData>;
   /**
-   * This function can be set to automatically get the next cursor for infinite queries.
+   * This function can be set to automatically get the next cursor for infinite merapis.
    * The result will also be used to determine the value of `hasNextPage`.
    */
   getNextPageParam?: GetNextPageParamFunction<TMerapiFnData>;
@@ -565,7 +567,7 @@ export interface MutationOptions<
     context: TContext | undefined;
   }) => Promise<unknown> | unknown;
   onSettled?: (options: {
-    data: TData | undefined;
+    data?: TData | undefined;
     error: TError | null;
     variables: TVariables;
     context: TContext | undefined;
@@ -703,14 +705,14 @@ export type MutationObserverResult<
   | MutationObserverSuccessResult<TData, TError, TVariables, TContext>;
 
 export interface MerapiClientConfig {
-  queryCache?: MerapiCache;
+  merapiCache?: MerapiCache;
   mutationCache?: MutationCache;
   logger?: Logger;
   defaultOptions?: DefaultOptions;
 }
 
 export interface DefaultOptions<TError = unknown> {
-  queries?: MerapiObserverOptions<unknown, TError>;
+  merapis?: MerapiObserverOptions<unknown, TError>;
   mutations?: MutationObserverOptions<unknown, TError, unknown, unknown>;
 }
 
