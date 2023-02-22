@@ -10,6 +10,6 @@ module.exports = defineConfig({
     'no-restricted-syntax': 'off',
     'no-void': 'off',
     'prefer-promise-reject-errors': 'off',
-
+    'no-case-declarations': 'off',
   },
 });

@@ -312,14 +312,14 @@ export class MerapiObserver<
   private executeFetch(
     fetchOptions?: ObserverFetchOptions,
   ): Promise<TMerapiData | undefined> {
-    // Make sure we reference the latest query as the current one might have been removed
+    // Make sure we reference the latest merapi as the current one might have been removed
     this.updateMerapi();
 
     // Fetch
-    let promise: Promise<TMerapiData | undefined> = this.currentMerapi.fetch(
-      this.options as MerapiOptions<TMerapiFnData, TError, TMerapiData, TMerapiKey>,
+    let promise: Promise<TMerapiData | undefined> = this.currentMerapi.fetch({
+      options: this.options as MerapiOptions<TMerapiFnData, TError, TMerapiData, TMerapiKey>,
       fetchOptions,
-    );
+    });
 
     if (!fetchOptions?.throwOnError) {
       promise = promise.catch(noop);
@@ -495,7 +495,7 @@ export class MerapiObserver<
         }
       }
     } else {
-      // Use query data
+      // Use merapi data
       data = state.data as unknown as TData;
     }
 

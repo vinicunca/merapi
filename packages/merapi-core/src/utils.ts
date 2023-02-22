@@ -111,13 +111,13 @@ export function parseMutationArgs<
   arg3?: TOptions,
 ): TOptions {
   if (isMerapiKey(arg1)) {
-    if (typeof arg2 === 'function') {
+    if (isFunction(arg2)) {
       return { ...arg3, mutationKey: arg1, mutationFn: arg2 } as TOptions;
     }
     return { ...arg2, mutationKey: arg1 } as TOptions;
   }
 
-  if (typeof arg1 === 'function') {
+  if (isFunction(arg1)) {
     return { ...arg2, mutationFn: arg1 } as TOptions;
   }
 

@@ -1,9 +1,13 @@
 import { type SpyInstance } from 'vitest';
 import { vi } from 'vitest';
 
-import { type MutationOptions } from '../entities';
+import { type MerapiClientConfig, type MutationOptions } from '../entities';
 import { MerapiClient } from '../merapi-client';
 import * as utils from '../utils';
+
+export function mockVisibilityState(value: DocumentVisibilityState) {
+  return vi.spyOn(window.document, 'visibilityState', 'get').mockReturnValue(value);
+}
 
 /**
  * This monkey-patches the isServer-value from utils,
@@ -21,6 +25,12 @@ export function setIsServer(isServer: boolean) {
     });
   };
 }
+
+export const mockLogger = {
+  log: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
 
 let merapiKeyCount = 0;
 export function merapiKey(): Array<string> {
@@ -44,3 +54,4 @@ export const executeMutation = (
 ): Promise<unknown> => {
   return merapiClient.getMutationCache().build(merapiClient, options).execute();
 };
+

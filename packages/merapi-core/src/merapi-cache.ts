@@ -1,57 +1,57 @@
 import { isUndefined } from '@vinicunca/js-utilities';
 
+import { type MerapiKey, type MerapiOptions, type NotifyEvent } from './entities';
 import { type MerapiFilters, matchMerapi, parseFilterArgs } from './utils';
 import { type MerapiClient } from './merapi-client';
 import { type Action, Merapi, type MerapiState } from './merapi';
-import { type MerapiKey, type MerapiOptions } from './entities';
 import { type MerapiObserver } from './merapi-observer';
 import { Subscribable } from './subscribable';
 import { hashMerapiKeyByOptions } from './utils';
 import { notifyManager } from './notify-manager';
 
 interface MerapiCacheConfig {
-  onError?: (error: unknown, Merapi: Merapi<unknown, unknown, unknown>) => void;
-  onSuccess?: (data: unknown, Merapi: Merapi<unknown, unknown, unknown>) => void;
+  onError?: (error: unknown, merapi: Merapi<unknown, unknown, unknown>) => void;
+  onSuccess?: (data: unknown, merapi: Merapi<unknown, unknown, unknown>) => void;
 }
 
 interface MerapiHashMap {
   [hash: string]: Merapi<any, any, any, any>;
 }
 
-interface NotifyEventMerapiAdded {
+interface NotifyEventMerapiAdded extends NotifyEvent {
   type: 'added';
   merapi: Merapi<any, any, any, any>;
 }
 
-interface NotifyEventMerapiRemoved {
+interface NotifyEventMerapiRemoved extends NotifyEvent {
   type: 'removed';
   merapi: Merapi<any, any, any, any>;
 }
 
-interface NotifyEventMerapiUpdated {
+interface NotifyEventMerapiUpdated extends NotifyEvent {
   type: 'updated';
   merapi: Merapi<any, any, any, any>;
   action: Action<any, any>;
 }
 
-interface NotifyEventMerapiObserverAdded {
+interface NotifyEventMerapiObserverAdded extends NotifyEvent {
   type: 'observerAdded';
   merapi: Merapi<any, any, any, any>;
   observer: MerapiObserver<any, any, any, any, any>;
 }
 
-interface NotifyEventMerapiObserverRemoved {
+interface NotifyEventMerapiObserverRemoved extends NotifyEvent {
   type: 'observerRemoved';
   merapi: Merapi<any, any, any, any>;
   observer: MerapiObserver<any, any, any, any, any>;
 }
 
-interface NotifyEventMerapiObserverResultsUpdated {
+interface NotifyEventMerapiObserverResultsUpdated extends NotifyEvent {
   type: 'observerResultsUpdated';
   merapi: Merapi<any, any, any, any>;
 }
 
-interface NotifyEventMerapiObserverOptionsUpdated {
+interface NotifyEventMerapiObserverOptionsUpdated extends NotifyEvent {
   type: 'observerOptionsUpdated';
   merapi: Merapi<any, any, any, any>;
   observer: MerapiObserver<any, any, any, any, any>;

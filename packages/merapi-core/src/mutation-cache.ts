@@ -1,8 +1,8 @@
 import { isUndefined } from '@vinicunca/js-utilities';
 
+import { type MutationOptions, type NotifyEvent } from './entities';
 import { type Action, type MutationState } from './mutation';
 import { type MutationObserver } from './mutation-observer';
-import { type MutationOptions } from './entities';
 import { type MerapiClient } from './merapi-client';
 import { notifyManager } from './notify-manager';
 import { Mutation } from './mutation';
@@ -29,34 +29,34 @@ interface MutationCacheConfig {
   }) => Promise<unknown> | unknown;
 }
 
-interface NotifyEventMutationAdded {
+interface NotifyEventMutationAdded extends NotifyEvent {
   type: 'added';
   mutation: Mutation<any, any, any, any>;
 }
-interface NotifyEventMutationRemoved {
+interface NotifyEventMutationRemoved extends NotifyEvent {
   type: 'removed';
   mutation: Mutation<any, any, any, any>;
 }
 
-interface NotifyEventMutationObserverAdded {
+interface NotifyEventMutationObserverAdded extends NotifyEvent {
   type: 'observerAdded';
   mutation: Mutation<any, any, any, any>;
   observer: MutationObserver<any, any, any>;
 }
 
-interface NotifyEventMutationObserverRemoved {
+interface NotifyEventMutationObserverRemoved extends NotifyEvent {
   type: 'observerRemoved';
   mutation: Mutation<any, any, any, any>;
   observer: MutationObserver<any, any, any>;
 }
 
-interface NotifyEventMutationObserverOptionsUpdated {
+interface NotifyEventMutationObserverOptionsUpdated extends NotifyEvent {
   type: 'observerOptionsUpdated';
   mutation?: Mutation<any, any, any, any>;
   observer: MutationObserver<any, any, any, any>;
 }
 
-interface NotifyEventMutationUpdated {
+interface NotifyEventMutationUpdated extends NotifyEvent {
   type: 'updated';
   mutation: Mutation<any, any, any, any>;
   action: Action<any, any, any, any>;

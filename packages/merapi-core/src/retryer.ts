@@ -1,9 +1,8 @@
-import { isFunction, isNumber } from '@vinicunca/js-utilities';
+import { isFunction, isNumber, sleep } from '@vinicunca/js-utilities';
 
 import { type CancelOptions, type NetworkMode } from './entities';
 import { focusManager } from './focus-manager';
 import { onlineManager } from './online-manager';
-import { sleep } from './utils';
 
 interface RetryerConfig<TData = unknown, TError = unknown> {
   fn: () => TData | Promise<TData>;

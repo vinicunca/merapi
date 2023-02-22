@@ -327,7 +327,7 @@ export class Merapi<
     {
       options?: MerapiOptions<TMerapiFnData, TError, TData, TMerapiKey>;
       fetchOptions?: FetchOptions;
-    },
+    } = {},
   ): Promise<TData> {
     if (this.state.fetchStatus !== 'idle') {
       if (this.state.dataUpdatedAt && fetchOptions?.cancelRefetch) {
